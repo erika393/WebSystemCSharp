@@ -47,6 +47,8 @@ namespace SalesWebMvc {
             app.UseMvc(routes => {
                 routes.MapRoute(
                     name: "default",
+                    //o ? ao lado de id significa que o id eh opcional, entao nao 
+                    //declaramos valor a ele
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }

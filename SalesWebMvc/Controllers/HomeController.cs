@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SalesWebMvc.Models;
+using SalesWebMvc.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,8 +13,12 @@ namespace SalesWebMvc.Controllers {
         }
 
         public IActionResult About() {
+            //Esse viewdata é um dictionary do c#
             ViewData["Message"] = "Your application description page.";
 
+            //esse view eh o Method Builder, q retorna uma view. Que ve uma view da acao about,
+            //entao o framework procura na pasta views da subpasta de mesmo nome do controlador,
+            //e procura pelo mesmo nome do metodo. Ou seja HOMEcontroller/About
             return View();
         }
 
