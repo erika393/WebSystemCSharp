@@ -13,6 +13,11 @@ namespace SalesWebMvc.Models
         public double BaseSalary { get; set; }
         public Department Department { get; set; }
 
+        //abaixo estamos avisando ao framework que esse id do department deve existir
+        //pois ai nao sera nulo
+        //OBS: Department deve ser igual ao nome da classe para que consiga pegar o id
+        public int DepartmentId { get; set; }
+
         public ICollection<SalesRecord> Sales { get; set; } = new List<SalesRecord>();
 
         public Seller() { }
