@@ -1,4 +1,6 @@
-﻿@model SalesWebMvc.Models.Seller //falamos q a minha view temos a disposicao dela o Seller 
+﻿@model SalesWebMvc.Models.ViewModels.SellerFormViewModel //falamos q a minha view temos a disposicao dela o Seller 
+
+@using SalesWebMvc.Models;
 
 @{ 
     ViewData["Title"] = "Create";
@@ -16,20 +18,32 @@
         <form asp-action="Create">
             <div class="form-group">
                 <!--usamos o asp-for para -->
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <label class="control-label"></label>
+                <input @*asp-for="Seller.Name"*@ name="Name" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <label class="control-label"></label>
+                <input asp-for="Seller.Email" name="Email" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="BirthDate" class="control-label"></label>
-                <input asp-for="BirthDate" class="form-control" />
+                <label class="control-label"></label>
+                <input asp-for="Seller.BirthDate" name="BirthDate" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="BaseSalary" class="control-label"></label>
-                <input asp-for="BaseSalary" class="form-control" />
+                <label class="control-label"></label>
+                <input asp-for="Seller.BaseSalary" name="BaseSalary" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label"></label>
+                <!--select list recebe tres argumentos, fonte de dados, qual attr desse objeto vai ser a chave, qual attr vai aparecer na caixinha de selecao-->
+                <select name="DepartmentId" asp-for="Seller.DepartmentId" asp-items="@(new SelectList(Model.Departments,"Id", "Name"))" class="form-control" ></select>
+                @*<select asp-for="Seller.DepartmentId" name="Department">
+                    @foreach (Department d in Model.Departments)
+                    {
+                        <option value="@d.Id" name="@d">@d.Name</option>
+                    }
+                </select>*@
+
             </div>
             <div class="form-group">
                 <button type="submit" value="Create" class="btn btn-default">Create</button>
