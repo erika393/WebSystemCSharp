@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using SalesWebMvc.Services;
 using SalesWebMvc.Models.ViewModels;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace SalesWebMvc.Controllers
 {
@@ -18,15 +20,15 @@ namespace SalesWebMvc.Controllers
             _sellerService = sellerService;
             _departmentService = departmentService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = _sellerService.FindAll();
+            var list = await _sellerService.FindAllAsync();
             return View(list);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _departmentService.FindAll(); //busca do db todos os departamentos
+            var departments = await _departmentService.FindAllAsync(); //busca do db todos os departamentos
             var viewModel = new SellerFormViewModel { Departments = departments };
             return View(viewModel);
             //agr a nossa tela ja vai receber o department quando cadastrar a 1x
@@ -35,20 +37,23 @@ namespace SalesWebMvc.Controllers
         [HttpPost] //para dizermos q eh um metodo post, se fosse get n precisaria colocar
         [ValidateAntiForgeryToken] //metodo de segurança p q n usem o token de validacao para
         //enviar dados maliciosos
-        public IActionResult Create(Seller obj)
+        public async Task<IActionResult> Create(Seller obj)
         {
-            var departments = _departmentService.FindAll();
-            var viewModel = new SellerFormViewModel { Seller = obj, Departments = departments }
+            if (!ModelState.IsValid)
+            {
+                var departments = await _departmentService.FindAllAsync();
+                var viewModel = new SellerFormViewModel { Seller = obj, Departments = departments };
                 return View(viewModel); //se o js for desabilitado e n puder fazer a validacao, ele manda voltar e terminar essa validacao antes de continuar retornando a mesma view
+            }
             //inserimos o obj
-            _sellerService.Insert(obj);
+            await _sellerService.InsertAsync(obj);
             //redirecionamos para a acao index
             //obs: poderiamos colocar Red...("Index"), porem com o nameof, se 
             //mudarmos 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int? id) //int? = opcional
+        public async Task<IActionResult> Delete(int? id) //int? = opcional
         {
 
             if(id == null)
@@ -56,7 +61,7 @@ namespace SalesWebMvc.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Id not provided"});
             }
 
-            var obj = _sellerService.FindById(id.Value); //pra pegar o valor dele caso existe, por ser opcional
+            var obj = await _sellerService.FindByIdAsync(id.Value); //pra pegar o valor dele caso existe, por ser opcional
             if(obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -67,20 +72,20 @@ namespace SalesWebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _sellerService.Remove(id);
+            await _sellerService.RemoveAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value); //pra pegar o valor dele caso existe, por ser opcional
+            var obj = await _sellerService.FindByIdAsync(id.Value); //pra pegar o valor dele caso existe, por ser opcional
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" }); ;
@@ -89,30 +94,30 @@ namespace SalesWebMvc.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int? id) //esse ? ao lado do int é só pra nao dar erro de execucao, mas ele eh obrigatorio
+        public async Task<IActionResult> Edit(int? id) //esse ? ao lado do int é só pra nao dar erro de execucao, mas ele eh obrigatorio
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value);
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
-            List<Department> departments = _departmentService.FindAll();
+            List<Department> departments = await _departmentService.FindAllAsync();
             SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments };
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Seller seller)
+        public async Task<IActionResult> Edit(int id, Seller seller)
         {
             if (!ModelState.IsValid)
             {
-                var departments = _departmentService.FindAll();
+                var departments = await _departmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
                 return View(viewModel); //se o js for desabilitado e n puder fazer a validacao, ele manda voltar e terminar essa validacao antes de continuar retornando a mesma view
             }
@@ -122,7 +127,7 @@ namespace SalesWebMvc.Controllers
             }
             try
             {
-                _sellerService.Update(seller);
+                await _sellerService.UpdateAsync(seller);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException e) //o App eh um super das excecoes personalizadas
