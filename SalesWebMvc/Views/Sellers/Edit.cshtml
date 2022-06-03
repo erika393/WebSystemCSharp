@@ -1,9 +1,9 @@
-﻿@model SalesWebMvc.Models.ViewModels.SellerFormViewModel //falamos q a minha view temos a disposicao dela o Seller 
+﻿@model SalesWebMvc.Models.ViewModels.SellerFormViewModel //falamos q a minha view temos a disposicao dela o Seller
 
 @using SalesWebMvc.Models;
 
-@{ 
-    ViewData["Title"] = "Create";
+@{
+    ViewData["Title"] = "Edit";
 
     //O nome da view deve ser igual ao metodo do SellersController
 }
@@ -15,7 +15,8 @@
     <div class="col-md-4">
         <!--abaixo chamaremos o metodo create, mas do post e nao do get como no index no button
             Create New-->
-        <form asp-action="Create">
+        <form asp-action="Edit"> /<!--edit no metodo post-->
+        <input type="hidden" asp-for="Seller.Id" name="Id"/>
             <div class="form-group">
                 <!--usamos o asp-for para -->
                 <label asp-for="Seller.Name" class="control-label"></label>
@@ -37,16 +38,10 @@
                 <label asp-for="Seller.Department.Name" class="control-label"></label>
                 <!--select list recebe tres argumentos, fonte de dados, qual attr desse objeto vai ser a chave, qual attr vai aparecer na caixinha de selecao-->
                 <select name="DepartmentId" asp-for="Seller.DepartmentId" asp-items="@(new SelectList(Model.Departments,"Id", "Name"))" class="form-control"></select>
-                @*<select asp-for="Seller.DepartmentId" name="Department">
-                @foreach (Department d in Model.Departments)
-                {
-                    <option value="@d.Id" name="@d">@d.Name</option>
-                }
-            </select>*@
 
             </div>
             <div class="form-group">
-                <button type="submit" value="Create" class="btn btn-default">Create</button>
+                <button type="submit" value="Save" class="btn btn-default">Save</button>
             </div>
         </form>
     </div>
