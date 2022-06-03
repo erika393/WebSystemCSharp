@@ -68,30 +68,17 @@ namespace SalesWebMvc.Services
 
         public async Task RemoveAsync(int id)
         {
-            var obj = await _context.Seller.FindAsync(id);
-            _context.Seller.Remove(obj);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var obj = await _context.Seller.FindAsync(id);
+                _context.Seller.Remove(obj);
+                await _context.SaveChangesAsync();
+            }
+            catch(DbUpdateException e)
+            {
+                throw new IntegrityException(e.Message);
+            }
         }
-
-        //public void Update(Seller obj)
-        //{   
-        //    //o any serve pra falar se existe algum dado na condicao colocada
-        //    if(!_context.Seller.Any(x => x.Id == obj.Id))
-        //    {
-        //        throw new NotFoundException("Id not found"); //excecao de nivel de servico
-        //    }
-        //    try
-        //    {
-        //        _context.Update(obj);
-        //        _context.SaveChanges();
-        //    }
-        //    catch(DbUpdateConcurrencyException e)
-        //    {
-        //        throw new DbConcurrencyException(e.Message); //excecao de nivel de acesso a dados
-        //        //Aqui eh capturado a excecao em nivel de acesso a dados e relancada em nivel de servico
-        //    }
-
-        //}
 
         public async Task UpdateAsync(Seller obj)
         {
