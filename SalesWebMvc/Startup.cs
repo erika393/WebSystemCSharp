@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SalesWebMvc.Data;
 using SalesWebMvc.Services;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using System.Collections.Generic;
 
 namespace SalesWebMvc
 {
@@ -52,10 +50,20 @@ namespace SalesWebMvc
         //ao add o metodo seedingService no Configure automaticamente ja é instanciado ele mesmo
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedingService seedingService)
         {
+            //config for defined usa application (generic and using . and not ,)
+            var enUS = new CultureInfo("en-US");
+            var localizationOptions = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(enUS), //qual sera o locale padrao do app
+                SupportedCultures = new List<CultureInfo> { enUS }, //quais locales possiveis na app
+                SupportedUICultures = new List<CultureInfo> { enUS }
+            };
+
+            app.UseRequestLocalization(localizationOptions);
+
             //se estivermos no perfil de desenvolvimento iremos rodar o SeedingService
             if (env.IsDevelopment())
             {
-
                 app.UseDeveloperExceptionPage();
                 seedingService.Seed();
                 //entao populamos a base de dados caso ela nao esteja populada ainda
