@@ -2,11 +2,8 @@
 using SalesWebMvc.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SalesWebMvc.Services;
 using SalesWebMvc.Models.ViewModels;
-using SalesWebMvc.Services.Exceptions;
 using System.Diagnostics;
 
 namespace SalesWebMvc.Controllers
@@ -40,6 +37,9 @@ namespace SalesWebMvc.Controllers
         //enviar dados maliciosos
         public IActionResult Create(Seller obj)
         {
+            var departments = _departmentService.FindAll();
+            var viewModel = new SellerFormViewModel { Seller = obj, Departments = departments }
+                return View(viewModel); //se o js for desabilitado e n puder fazer a validacao, ele manda voltar e terminar essa validacao antes de continuar retornando a mesma view
             //inserimos o obj
             _sellerService.Insert(obj);
             //redirecionamos para a acao index
@@ -50,6 +50,7 @@ namespace SalesWebMvc.Controllers
 
         public IActionResult Delete(int? id) //int? = opcional
         {
+
             if(id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided"});
@@ -109,6 +110,12 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel); //se o js for desabilitado e n puder fazer a validacao, ele manda voltar e terminar essa validacao antes de continuar retornando a mesma view
+            }
             if(id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
